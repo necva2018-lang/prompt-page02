@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { addEvent } from "@/lib/storage";
+import { apiClient } from "@/lib/apiClient";
+import { USE_API } from "@/lib/useApi";
 import type { Prompt } from "@/lib/types";
 
 type PromptCardProps = {
@@ -36,13 +38,22 @@ export default function PromptCard({ prompt, copyCount = 0, onCopy: onCopyCallba
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      navigator.clipboard.writeText(prompt.content).then(() => {
-        addEvent({
-          id: crypto.randomUUID(),
-          type: "copy",
-          promptId: prompt.id,
-          createdAt: new Date().toISOString(),
-        });
+      navigator.clipboard.writeText(prompt.content).then(async () => {
+        if (USE_API) {
+          await apiClient.addEvent({
+            id: crypto.randomUUID(),
+            type: "copy",
+            promptId: prompt.id,
+            createdAt: new Date().toISOString(),
+          });
+        } else {
+          addEvent({
+            id: crypto.randomUUID(),
+            type: "copy",
+            promptId: prompt.id,
+            createdAt: new Date().toISOString(),
+          });
+        }
         setJustCopied(true);
         setTimeout(() => setJustCopied(false), 2000);
         onCopyCallback?.();

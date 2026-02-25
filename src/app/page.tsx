@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import Tabs from "@/components/Tabs";
 import PromptCard from "@/components/PromptCard";
 import { usePrompts } from "@/hooks/usePrompts";
 import { getCopyCountMap } from "@/lib/storage";
+import { getCopyCountMapFromApi } from "@/lib/apiClient";
+import { USE_API } from "@/lib/useApi";
 
 export default function HomePage() {
   const {
@@ -19,11 +21,15 @@ export default function HomePage() {
     isEmpty,
   } = usePrompts();
   const [copyRefresh, setCopyRefresh] = useState(0);
+  const [copyCountMap, setCopyCountMap] = useState<Record<string, number>>({});
 
-  const copyCountMap = useMemo(
-    () => getCopyCountMap(),
-    [prompts, copyRefresh]
-  );
+  useEffect(() => {
+    if (USE_API) {
+      getCopyCountMapFromApi().then(setCopyCountMap);
+    } else {
+      setCopyCountMap(getCopyCountMap());
+    }
+  }, [prompts, copyRefresh]);
   const onCopy = useCallback(() => setCopyRefresh((r) => r + 1), []);
 
   return (

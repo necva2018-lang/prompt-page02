@@ -8,6 +8,8 @@ import {
   deletePrompt,
   resetPromptsToSeed,
 } from "@/lib/storage";
+import { apiClient } from "@/lib/apiClient";
+import { USE_API } from "@/lib/useApi";
 import { slugify } from "@/lib/slugify";
 import type { Prompt, PromptStatus } from "@/lib/types";
 
@@ -25,7 +27,13 @@ export default function AdminPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
 
-  const load = () => setPrompts(getPrompts());
+  const load = () => {
+    if (USE_API) {
+      apiClient.getPrompts().then(setPrompts);
+    } else {
+      setPrompts(getPrompts());
+    }
+  };
 
   useEffect(() => {
     load();
@@ -56,7 +64,7 @@ export default function AdminPage() {
     fillForm(p);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const now = new Date().toISOString();
     const slug = (form.slug ?? "").trim() || slugify(form.title ?? "");
     const tags = (form.tagsStr ?? "")
@@ -75,30 +83,49 @@ export default function AdminPage() {
       publishedAt: form.status === "published" ? now : selected?.publishedAt,
       status: form.status,
     };
-    upsertPrompt(prompt);
-    load();
-    if (!selectedId) {
-      const list = getPrompts().filter((p) => p.slug === slug);
-      const created = list.sort(
+    if (USE_API) {
+      await apiClient.upsertPrompt(prompt);
+      const list = await apiClient.getPrompts();
+      const created = list.filter((p) => p.slug === slug).sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       )[0];
+      load();
       if (created) setSelectedId(created.id);
+    } else {
+      upsertPrompt(prompt);
+      load();
+      if (!selectedId) {
+        const list = getPrompts().filter((p) => p.slug === slug);
+        const created = list.sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )[0];
+        if (created) setSelectedId(created.id);
+      }
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedId) return;
     if (!confirm("確定要刪除這則 prompt？")) return;
-    deletePrompt(selectedId);
+    if (USE_API) {
+      await apiClient.deletePrompt(selectedId);
+    } else {
+      deletePrompt(selectedId);
+    }
     load();
     setSelectedId(null);
     setForm(emptyForm);
   };
 
-  const handleResetToSeed = () => {
+  const handleResetToSeed = async () => {
     if (!confirm("確定要重置為 10 筆案例？現有資料會被覆蓋。")) return;
-    resetPromptsToSeed();
+    if (USE_API) {
+      await apiClient.resetPromptsToSeed();
+    } else {
+      resetPromptsToSeed();
+    }
     load();
     setSelectedId(null);
     setForm(emptyForm);

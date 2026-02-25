@@ -4,6 +4,8 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
 import { getPromptBySlug, addEvent } from "@/lib/storage";
+import { apiClient } from "@/lib/apiClient";
+import { USE_API } from "@/lib/useApi";
 import { parseVariables, renderPrompt } from "@/lib/promptVariables";
 import type { Prompt } from "@/lib/types";
 
@@ -19,7 +21,11 @@ export default function PromptDetailPage() {
       setPrompt(null);
       return;
     }
-    setPrompt(getPromptBySlug(slug) ?? null);
+    if (USE_API) {
+      apiClient.getPromptBySlug(slug).then((p) => setPrompt(p ?? null));
+    } else {
+      setPrompt(getPromptBySlug(slug) ?? null);
+    }
   }, [slug]);
 
   const variables = useMemo(
@@ -48,12 +54,21 @@ export default function PromptDetailPage() {
     if (!prompt) return;
     try {
       await navigator.clipboard.writeText(renderedPrompt);
-      addEvent({
-        id: crypto.randomUUID(),
-        type: "copy",
-        promptId: prompt.id,
-        createdAt: new Date().toISOString(),
-      });
+      if (USE_API) {
+        await apiClient.addEvent({
+          id: crypto.randomUUID(),
+          type: "copy",
+          promptId: prompt.id,
+          createdAt: new Date().toISOString(),
+        });
+      } else {
+        addEvent({
+          id: crypto.randomUUID(),
+          type: "copy",
+          promptId: prompt.id,
+          createdAt: new Date().toISOString(),
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

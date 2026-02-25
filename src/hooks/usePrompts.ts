@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { getPrompts, getEvents } from "@/lib/storage";
+import { apiClient } from "@/lib/apiClient";
+import { USE_API } from "@/lib/useApi";
 import type { Prompt, Event } from "@/lib/types";
 import type { TabId } from "@/components/Tabs";
 
@@ -55,9 +57,13 @@ export function usePrompts() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const all = getPrompts();
-    setPrompts(all.filter((p) => p.status === "published"));
-    setEvents(getEvents());
+    if (USE_API) {
+      apiClient.getPrompts().then((all) => setPrompts(all.filter((p) => p.status === "published")));
+      apiClient.getEvents().then(setEvents);
+    } else {
+      setPrompts(getPrompts().filter((p) => p.status === "published"));
+      setEvents(getEvents());
+    }
   }, []);
 
   useEffect(() => {
