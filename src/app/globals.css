@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== 企業主題：CSS 自訂屬性 ========== */
+:root {
+  /* 主要品牌色：強烈、飽和的藍色 */
+  --primary-color: #0052cc;
+  /* 懸停時稍深的藍（按鈕/連結） */
+  --primary-hover: #003d99;
+  /* 次要色：較淺、友善的藍，用於次要背景或懸停 */
+  --secondary-color: #e6f0ff;
+  /* 主要頁面背景：純白 */
+  --bg-color: #ffffff;
+  /* 文字：深沉、專業灰 */
+  --text-color: #172b4d;
+  /* 次要文字 / 邊框 */
+  --text-muted: #5e6c84;
+  --border-color: #dfe1e6;
+  /* 按鈕主色上的文字 */
+  --on-primary: #ffffff;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+}
+
+@layer components {
+  /* 主要按鈕：主色藍 + 白字 */
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: var(--on-primary);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+  }
+  .btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  /* 次要按鈕 / 外框按鈕：懸停用次要藍 */
+  .btn-secondary {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    font-weight: 500;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-secondary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+  }
+
+  /* 連結：主色，懸停加深 */
+  .link-primary {
+    color: var(--primary-color);
+    transition: color 0.15s ease;
+  }
+  .link-primary:hover {
+    color: var(--primary-hover);
+  }
+
+  /* 輸入框 focus 使用主色 */
+  .input-focus-ring:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+  }
+
+  /* ========== 列表卡片風格（紅框參考） ========== */
+  .card-prompt {
+    --card-bg: #1a1d21;
+    --card-pill-bg: rgba(0, 0, 0, 0.55);
+    --card-pill-text: #ffffff;
+    --card-outline: rgba(255, 255, 255, 0.35);
+  }
+
+  .card-pill {
+    background: var(--card-pill-bg);
+    color: var(--card-pill-text);
+    border-radius: 9999px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .card-pill-outline {
+    background: transparent;
+    border: 1px solid var(--card-outline);
+    color: var(--card-pill-text);
+  }
+
+  .card-btn-outline {
+    background: transparent;
+    border: 1px solid var(--card-outline);
+    color: var(--card-pill-text);
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .card-btn-outline:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
