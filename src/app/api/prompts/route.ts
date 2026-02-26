@@ -9,6 +9,7 @@ export async function GET() {
       id: r.id,
       title: r.title,
       slug: r.slug,
+      description: r.description ?? undefined,
       content: r.content,
       coverImageUrl: r.coverImageUrl ?? "",
       tags: r.tags ?? [],
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
         id,
         title: body.title,
         slug: body.slug,
+        description: (body.description ?? "").trim(),
         content: body.content,
         coverImageUrl: body.coverImageUrl ?? "",
         tags: body.tags ?? [],
@@ -46,6 +48,7 @@ export async function POST(request: Request) {
       update: {
         title: body.title,
         slug: body.slug,
+        description: (body.description ?? "").trim(),
         content: body.content,
         coverImageUrl: body.coverImageUrl ?? "",
         tags: body.tags ?? [],

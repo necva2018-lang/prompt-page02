@@ -14,6 +14,7 @@ export async function GET(
       id: r.id,
       title: r.title,
       slug: r.slug,
+      description: r.description ?? undefined,
       content: r.content,
       coverImageUrl: r.coverImageUrl ?? "",
       tags: r.tags ?? [],

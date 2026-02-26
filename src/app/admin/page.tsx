@@ -48,7 +48,7 @@ export default function AdminPage() {
     setForm({
       title: p.title,
       slug: p.slug,
-      description: p.description,
+      description: p.description ?? "",
       coverImageUrl: p.coverImageUrl || "",
       tagsStr: p.tags.join(", "),
       content: p.content,

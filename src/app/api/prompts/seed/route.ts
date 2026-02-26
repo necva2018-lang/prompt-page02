@@ -11,6 +11,7 @@ export async function POST() {
           id: p.id,
           title: p.title,
           slug: p.slug,
+          description: p.description ?? "",
           content: p.content,
           coverImageUrl: p.coverImageUrl ?? "",
           tags: p.tags ?? [],
@@ -22,6 +23,7 @@ export async function POST() {
         update: {
           title: p.title,
           slug: p.slug,
+          description: p.description ?? "",
           content: p.content,
           coverImageUrl: p.coverImageUrl ?? "",
           tags: p.tags ?? [],
